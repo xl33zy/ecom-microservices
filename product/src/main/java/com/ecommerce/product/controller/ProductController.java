@@ -16,6 +16,14 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
+    @GetMapping("/simulate")
+    public ResponseEntity<String> simulateFailure(@RequestParam(defaultValue = "false") boolean fail) {
+        if (fail) {
+            throw new RuntimeException("Simulated Failure For Testing");
+        }
+        return ResponseEntity.ok("Product Service is OK");
+    }
+
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
@@ -25,11 +33,6 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProductById(@PathVariable String id) {
         return productService.getProductById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
-//        return productService.getProductById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-//    }
 
     @GetMapping("/search")
     public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam String keyword) {

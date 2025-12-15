@@ -10,13 +10,23 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: ${RABBITMQ_VHOST:guest}
+    connection-timeout: 30000
 
 server:
   port: 8083
+
+rabbitmq:
+  exchange:
+    name: order.exchange
+  queue:
+    name: order.queue
+  routing:
+    key: order.tracking
 
 management:
   endpoints:
@@ -48,7 +58,6 @@ logging:
       max-file-size: 5MB
       max-history: 7
 
-# Circuit Breaker
 resilience4j:
   circuitbreaker:
     instances:
@@ -61,15 +70,14 @@ resilience4j:
         failureRateThreshold: 50
         automaticTransitionFromOpenToHalfOpenEnabled: true
         slidingWindowType: count_based
-
-#resilience4j:
-#  circuitbreaker:
-#    instances:
-#      order-service:
-#        registerHealthIndicator: true
-#        slidingWindow:
-#          size: 10
-#          type: COUNT_BASED
-#        failureRateThreshold: 50
-#        automaticTransitionFromOpenToHalfOpenEnabled: true
-#        waitDurationInOpenState: 10s
+  retry:
+    instances:
+      retryBreaker:
+        maxAttempts: 5
+        waitDuration: 500ms
+  ratelimiter:
+    instances:
+      rateBreaker:
+        timeout-duration: 0
+        limit-refresh-period: 4s
+        limit-for-period: 2

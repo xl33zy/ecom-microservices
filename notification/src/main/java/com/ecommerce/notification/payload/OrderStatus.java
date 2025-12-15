@@ -1,4 +1,4 @@
-package com.ecommerce.order.model;
+package com.ecommerce.notification.payload;
 
 public enum OrderStatus {
     CREATED,

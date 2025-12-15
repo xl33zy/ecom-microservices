@@ -1,11 +1,11 @@
 package com.ecommerce.order.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor

@@ -30,18 +30,19 @@ services:
     networks:
       - backend
     restart: unless-stopped
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq_container
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      - backend
-    restart: unless-stopped
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+
+#  rabbitmq:
+#    image: rabbitmq:3-management
+#    container_name: rabbitmq_container
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    networks:
+#      - backend
+#    restart: unless-stopped
+#    environment:
+#      RABBITMQ_DEFAULT_USER: guest
+#      RABBITMQ_DEFAULT_PASS: guest
 
 networks:
   backend:
@@ -50,40 +51,3 @@ networks:
 volumes:
   postgres:
   pgadmin:
-
-#services:
-#  mysql:
-#    container_name: mysql_container
-#    image: mysql
-#    environment:
-#      MYSQL_ROOT_PASSWORD: xl33zy
-#      MYSQL_DATABASE: xl33zy
-#      MYSQL_USER: xl33zy
-#      MYSQL_PASSWORD: xl33zy
-#    volumes:
-#      - mysql_data:/var/liv/mysql
-#    ports:
-#      - "3307:3306"
-#    networks:
-#      - mysql
-#    restart: unless-stopped
-#
-#  phpmyadmin:
-#    container_name: phpmyadmin_container
-#    image: phpmyadmin/phpmyadmin
-#    environment:
-#      PMA_HOST: mysql
-#      PMA_PORT: 3306
-#      MYSQL_ROOT_PASSWORD: xl33zy
-#    ports:
-#      - "8484:80"
-#    networks:
-#      - mysql
-#    restart: unless-stopped
-#
-#networks:
-#  mysql:
-#    driver: bridge
-#
-#volumes:
-#  mysql_data:
