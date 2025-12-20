@@ -26,8 +26,7 @@ management:
       exposure:
         include: "*"
   tracing:
-    sampling:
-      probability: 1.0
+    enabled: false
 
 eureka:
   client:

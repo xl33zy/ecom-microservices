@@ -28,12 +28,6 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable String id) {
         log.info("Request received for user: {}", id);
-
-        log.trace("This is TRACE level - Very detailed logs");
-        log.debug("This is DEBUG level - Used for development debugging");
-        log.info("This is INFO level - General system information");
-        log.warn("This is WARN level - Something might be wrong");
-        log.error("This is ERROR level - Something failed");
         return userService.getUserById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

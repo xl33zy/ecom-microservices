@@ -5,6 +5,7 @@
       <w>orderdb</w>
       <w>postgre</w>
       <w>productdb</w>
+      <w>rollingpolicy</w>
       <w>userdb</w>
     </words>
   </dictionary>

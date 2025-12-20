@@ -20,8 +20,7 @@ management:
       exposure:
         include: "*"
   tracing:
-    sampling:
-      probability: 1.0
+    enabled: false  # отключаем Zipkin/Sleuth
 
 eureka:
   client:

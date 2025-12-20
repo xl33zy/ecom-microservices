@@ -13,8 +13,12 @@ management:
     circuitbreakers:
       enabled: true
   tracing:
+    enabled: true
     sampling:
       probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
 
 resilience4j:
   circuitbreaker:
