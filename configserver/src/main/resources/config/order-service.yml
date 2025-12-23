@@ -45,6 +45,14 @@ resilience4j:
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
         failureRateThreshold: 50
+  retry:
+    instances:
+      productService:
+        max-attempts: 3
+        wait-duration: 500ms
+        ignore-exceptions:
+          - com.ecommerce.order.exception.OutOfStockException
+          - com.ecommerce.order.exception.EntityNotFoundException
 
 logging:
   file:

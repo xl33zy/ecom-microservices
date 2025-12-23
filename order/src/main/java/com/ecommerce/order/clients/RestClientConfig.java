@@ -41,8 +41,5 @@ public class RestClientConfig {
             }
             return execution.execute(request, body);
         };
-
     }
-
-
 }

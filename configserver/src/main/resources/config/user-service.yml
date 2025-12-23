@@ -20,7 +20,7 @@ management:
       exposure:
         include: "*"
   tracing:
-    enabled: false  # отключаем Zipkin/Sleuth
+    enabled: false
 
 eureka:
   client:

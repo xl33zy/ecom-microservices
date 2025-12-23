@@ -1,5 +1,6 @@
 package com.ecommerce.order.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -8,8 +9,11 @@ import java.math.BigDecimal;
 public class ProductResponse {
     private Long id;
     private String name;
-    private String description;
+
+    @JsonProperty("price")
     private BigDecimal price;
+
+    @JsonProperty("stockQuantity")
     private Integer stockQuantity;
     private String category;
     private String imageUrl;
