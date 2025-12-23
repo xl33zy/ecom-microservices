@@ -30,8 +30,8 @@ public class ApiResponseDTO<T> {
                              .build();
     }
 
-    public static ApiResponseDTO<?> error(int status, String error, String message, String path, String requestId, String details) {
-        return ApiResponseDTO.builder()
+    public static <T> ApiResponseDTO<T> error(int status, String error, String message, String path, String requestId, String details) {
+        return ApiResponseDTO.<T>builder()
                              .timestamp(LocalDateTime.now())
                              .status(status)
                              .error(error)
@@ -43,4 +43,3 @@ public class ApiResponseDTO<T> {
                              .build();
     }
 }
-

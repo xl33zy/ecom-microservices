@@ -41,13 +41,25 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<UserResponse>> getUserById(@PathVariable String id, WebRequest webRequest) {
-        UserResponse response = userService.getUserById(id)
-                                           .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        UserResponse response = userService.getUserById(id); // исключение выбросится внутри сервиса
         String requestId = generateRequestId();
         log.info("Request received for user: {}", id);
         return ResponseEntity.ok(ApiResponseDTO.success(
                 response,
                 "User retrieved successfully",
+                webRequest.getDescription(false).replace("uri=", ""),
+                requestId
+        ));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponseDTO<UserResponse>> updateUser(@PathVariable String id, @Valid @RequestBody UserRequest updateUserRequest, WebRequest webRequest) {
+        UserResponse response = userService.updateUser(id, updateUserRequest);
+        String requestId = generateRequestId();
+        log.info("Updating user with id: {}", id);
+        return ResponseEntity.ok(ApiResponseDTO.success(
+                response,
+                "User updated successfully",
                 webRequest.getDescription(false).replace("uri=", ""),
                 requestId
         ));
@@ -62,29 +74,16 @@ public class UserController {
                              .body(ApiResponseDTO.success(response, "User created successfully", webRequest.getDescription(false).replace("uri=", ""), requestId));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponseDTO<UserResponse>> updateUser(@PathVariable String id, @Valid @RequestBody UserRequest updateUserRequest, WebRequest webRequest) {
-        UserResponse response = userService.updateUser(id, updateUserRequest)
-                                           .orElseThrow(() -> new EntityNotFoundException("User not found for update with id: " + id));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponseDTO<Void>> deleteUser(@PathVariable String id, WebRequest webRequest) {
+        userService.deleteUser(id);
         String requestId = generateRequestId();
-        log.info("Updating user with id: {}", id);
+        log.info("Deleted user with id: {}", id);
         return ResponseEntity.ok(ApiResponseDTO.success(
-                response,
-                "User updated successfully",
+                null,
+                "User deleted successfully",
                 webRequest.getDescription(false).replace("uri=", ""),
                 requestId
         ));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponseDTO<Void>> deleteUser(@PathVariable String id, WebRequest webRequest) {
-        boolean deleted = userService.deleteUser(id);
-        String requestId = generateRequestId();
-        if (deleted) {
-            log.info("Deleted user with id: {}", id);
-            return ResponseEntity.ok(ApiResponseDTO.success(null, "User deleted successfully", webRequest.getDescription(false).replace("uri=", ""), requestId));
-        } else {
-            throw new EntityNotFoundException("User not found with id: " + id);
-        }
     }
 }

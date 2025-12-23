@@ -27,34 +27,6 @@ public class ProductController {
         return UUID.randomUUID().toString();
     }
 
-//    @GetMapping("/simulate")
-//    public ResponseEntity<ApiResponseDTO<String>> simulateFailure(
-//            @RequestParam(defaultValue = "false") boolean fail,
-//            WebRequest webRequest
-//    ) {
-//        if (fail) {
-//            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-//                                 .body(ApiResponseDTO.error(
-//                                         HttpStatus.SERVICE_UNAVAILABLE.value(),
-//                                         "PRODUCT_SERVICE_UNAVAILABLE",
-//                                         "Simulated product service outage",
-//                                         path(webRequest),
-//                                         requestId(),
-//                                         null
-//                                 ));
-//        }
-//
-//        return ResponseEntity.ok(
-//                ApiResponseDTO.success(
-//                        "Product Service is OK",
-//                        "Service health check passed",
-//                        path(webRequest),
-//                        requestId()
-//                )
-//        );
-//    }
-
-
     @GetMapping
     public ResponseEntity<ApiResponseDTO<List<ProductResponse>>> getAllProducts(WebRequest webRequest) {
         return ResponseEntity.ok(
@@ -146,12 +118,13 @@ public class ProductController {
             throw new EntityNotFoundException("Product not found with id: " + id);
         }
 
+        String requestId = UUID.randomUUID().toString();
         return ResponseEntity.ok(
                 ApiResponseDTO.success(
                         null,
                         "Product deleted successfully",
-                        path(webRequest),
-                        requestId()
+                        webRequest.getDescription(false).replace("uri=", ""),
+                        requestId
                 )
         );
     }
