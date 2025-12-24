@@ -15,6 +15,7 @@ public class ProductResponse {
 
     @JsonProperty("stockQuantity")
     private Integer stockQuantity;
+
     private String category;
     private String imageUrl;
     private Boolean active;

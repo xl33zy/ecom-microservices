@@ -19,7 +19,7 @@ public interface OrderEventMapper {
     @Mapping(target = "userId", source = "userId")
     @Mapping(target = "totalAmount", source = "totalAmount")
     @Mapping(target = "status", source = "status")
-    @Mapping(target = "createAt", source = "createdAt")
+    @Mapping(target = "createdAt", source = "createdAt")
     OrderCreatedEvent toOrderCreatedEvent(Order order);
 
     List<OrderItemDTO> mapOrderItems(List<OrderItem> items);

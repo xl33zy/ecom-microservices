@@ -80,6 +80,7 @@ public class CartService {
 
     @Transactional
     public void deleteItemFromCart(String userId, Long productId) {
+        log.info("DELETE cart item: userId={}, productId={}", userId, productId);
         CartItem cartItem = cartItemRepository
                 .findByUserIdAndProductId(userId, productId);
 
