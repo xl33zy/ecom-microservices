@@ -4,6 +4,7 @@ import com.ecommerce.order.dto.ApiResponseDTO;
 import com.ecommerce.order.dto.CartItemRequest;
 import com.ecommerce.order.model.CartItem;
 import com.ecommerce.order.service.CartService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,8 @@ public class CartController {
             @RequestHeader("X-User-ID") String userId,
             WebRequest webRequest
     ) {
+        log.info("Fetching cart for userId={}", userId);
+
         return ResponseEntity.ok(
                 ApiResponseDTO.success(
                         cartService.getCart(userId),
@@ -43,13 +46,15 @@ public class CartController {
     @PostMapping
     public ResponseEntity<ApiResponseDTO<Void>> addToCart(
             @RequestHeader("X-User-ID") String userId,
-            @RequestBody CartItemRequest request,
+            @Valid @RequestBody CartItemRequest request,
             WebRequest webRequest
     ) {
+        log.info("Adding product {} to cart for userId={}", request.getProductId(), userId);
+
         cartService.addToCart(userId, request);
 
         return ResponseEntity.status(201).body(
-                ApiResponseDTO.<Void>success(
+                ApiResponseDTO.success(
                         null,
                         "Product added to cart successfully",
                         path(webRequest),
@@ -64,10 +69,12 @@ public class CartController {
             @PathVariable Long productId,
             WebRequest webRequest
     ) {
+        log.info("Removing product {} from cart for userId={}", productId, userId);
+
         cartService.deleteItemFromCart(userId, productId);
 
         return ResponseEntity.ok(
-                ApiResponseDTO.<Void>success(
+                ApiResponseDTO.success(
                         null,
                         "Item removed from cart successfully",
                         path(webRequest),
@@ -80,4 +87,3 @@ public class CartController {
         return webRequest.getDescription(false).replace("uri=", "");
     }
 }
-

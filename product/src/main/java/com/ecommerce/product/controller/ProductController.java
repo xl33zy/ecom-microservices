@@ -5,9 +5,12 @@ import com.ecommerce.product.dto.ProductRequest;
 import com.ecommerce.product.dto.ProductResponse;
 import com.ecommerce.product.exception.EntityNotFoundException;
 import com.ecommerce.product.service.ProductService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
@@ -18,6 +21,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
+@Validated
 public class ProductController {
 
     private final ProductService productService;
@@ -26,8 +30,14 @@ public class ProductController {
         return UUID.randomUUID().toString();
     }
 
+    private String path(WebRequest webRequest) {
+        return webRequest.getDescription(false).replace("uri=", "");
+    }
+
     @GetMapping
-    public ResponseEntity<ApiResponseDTO<List<ProductResponse>>> getAllProducts(WebRequest webRequest) {
+    public ResponseEntity<ApiResponseDTO<List<ProductResponse>>> getAllProducts(
+            WebRequest webRequest
+    ) {
         return ResponseEntity.ok(
                 ApiResponseDTO.success(
                         productService.getAllProducts(),
@@ -40,7 +50,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<ProductResponse>> getProductById(
-            @PathVariable String id,
+            @PathVariable @NotBlank String id,
             WebRequest webRequest
     ) {
         ProductResponse product = productService.getProductById(id);
@@ -57,7 +67,7 @@ public class ProductController {
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponseDTO<List<ProductResponse>>> searchProducts(
-            @RequestParam String keyword,
+            @RequestParam @NotBlank String keyword,
             WebRequest webRequest
     ) {
         return ResponseEntity.ok(
@@ -72,7 +82,7 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ApiResponseDTO<ProductResponse>> createProduct(
-            @RequestBody ProductRequest request,
+            @Valid @RequestBody ProductRequest request,
             WebRequest webRequest
     ) {
         ProductResponse created = productService.createProduct(request);
@@ -89,12 +99,15 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<ProductResponse>> updateProduct(
-            @PathVariable String id,
-            @RequestBody ProductRequest request,
+            @PathVariable @NotBlank String id,
+            @Valid @RequestBody ProductRequest request,
             WebRequest webRequest
     ) {
-        ProductResponse updated = productService.updateProduct(Long.valueOf(id), request)
-                                                .orElseThrow(() -> new EntityNotFoundException("Product not found for update with id: " + id));
+        ProductResponse updated = productService
+                .updateProduct(Long.valueOf(id), request)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Product not found for update with id: " + id)
+                );
 
         return ResponseEntity.ok(
                 ApiResponseDTO.success(
@@ -108,7 +121,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<Void>> deleteProduct(
-            @PathVariable String id,
+            @PathVariable @NotBlank String id,
             WebRequest webRequest
     ) {
         boolean deleted = productService.deleteProduct(Long.valueOf(id));
@@ -117,18 +130,13 @@ public class ProductController {
             throw new EntityNotFoundException("Product not found with id: " + id);
         }
 
-        String requestId = UUID.randomUUID().toString();
         return ResponseEntity.ok(
                 ApiResponseDTO.success(
                         null,
                         "Product deleted successfully",
-                        webRequest.getDescription(false).replace("uri=", ""),
-                        requestId
+                        path(webRequest),
+                        requestId()
                 )
         );
-    }
-
-    private String path(WebRequest webRequest) {
-        return webRequest.getDescription(false).replace("uri=", "");
     }
 }
