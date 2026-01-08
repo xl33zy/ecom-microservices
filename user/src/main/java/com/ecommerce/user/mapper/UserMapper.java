@@ -1,7 +1,8 @@
 package com.ecommerce.user.mapper;
 
 import com.ecommerce.user.dto.AddressDTO;
-import com.ecommerce.user.dto.UserRequest;
+import com.ecommerce.user.dto.CreateUserRequest;
+import com.ecommerce.user.dto.UpdateUserRequest;
 import com.ecommerce.user.dto.UserResponse;
 import com.ecommerce.user.model.Address;
 import com.ecommerce.user.model.User;
@@ -9,23 +10,31 @@ import org.mapstruct.*;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface UserMapper {
+
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "keycloakId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "address", source = "address")
-    User toEntity(UserRequest request);
-
-    @Mapping(target = "address", source = "address")
-    UserResponse toResponse(User user);
+    User toEntity(CreateUserRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "keycloakId", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "address", source = "address")
-    void updateUserFromRequest(UserRequest request, @MappingTarget User user);
+    void updateUserFromRequest(UpdateUserRequest request, @MappingTarget User user);
+
+    @Mapping(target = "address", source = "address")
+    @Mapping(target = "keycloakId", source = "keycloakId")
+    UserResponse toResponse(User user);
 
     default Address toAddress(AddressDTO dto) {
         if (dto == null) return null;

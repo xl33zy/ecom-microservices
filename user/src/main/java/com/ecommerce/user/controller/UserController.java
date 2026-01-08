@@ -1,7 +1,8 @@
 package com.ecommerce.user.controller;
 
 import com.ecommerce.user.dto.ApiResponseDTO;
-import com.ecommerce.user.dto.UserRequest;
+import com.ecommerce.user.dto.CreateUserRequest;
+import com.ecommerce.user.dto.UpdateUserRequest;
 import com.ecommerce.user.dto.UserResponse;
 import com.ecommerce.user.service.UserService;
 import jakarta.validation.Valid;
@@ -58,11 +59,11 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<ApiResponseDTO<UserResponse>> createUser(
-            @Valid @RequestBody UserRequest userRequest,
+            @Valid @RequestBody CreateUserRequest createUserRequest,
             WebRequest webRequest
     ) {
-        UserResponse response = userService.createUser(userRequest);
-        log.info("Creating new user with email: {}", userRequest.getEmail());
+        UserResponse response = userService.createUser(createUserRequest);
+        log.info("Creating new user with email: {}", createUserRequest.getEmail());
 
         return ResponseEntity.status(201).body(ApiResponseDTO.success(
                 response,
@@ -75,7 +76,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<UserResponse>> updateUser(
             @PathVariable @NotBlank String id,
-            @Valid @RequestBody UserRequest updateUserRequest,
+            @Valid @RequestBody UpdateUserRequest updateUserRequest,
             WebRequest webRequest
     ) {
         UserResponse response = userService.updateUser(id, updateUserRequest);

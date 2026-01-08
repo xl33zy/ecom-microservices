@@ -1,34 +1,53 @@
 server:
   port: 8080
 
+spring:
+  application:
+    name: gateway-service
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/ecom-app
+
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+
   endpoint:
     health:
       show-details: always
-  health:
-    circuitbreakers:
-      enabled: true
+      probes:
+        enabled: true
+
   tracing:
     enabled: true
     sampling:
       probability: 1.0
+
   zipkin:
     tracing:
       endpoint: http://zipkin:9411/api/v2/spans
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
 
 resilience4j:
   circuitbreaker:
     instances:
       ecomBreaker:
         registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
         permittedNumberOfCallsInHalfOpenState: 3
         waitDurationInOpenState: 10s
         failureRateThreshold: 50
         automaticTransitionFromOpenToHalfOpenEnabled: true
-        slidingWindowType: count_based

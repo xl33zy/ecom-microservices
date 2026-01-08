@@ -10,6 +10,17 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
 logging:
   level:
-    com.thoughtworks.xstream: ERROR
+    root: INFO

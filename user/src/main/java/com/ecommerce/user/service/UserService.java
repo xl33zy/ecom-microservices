@@ -1,11 +1,13 @@
 package com.ecommerce.user.service;
 
-import com.ecommerce.user.dto.UserRequest;
+import com.ecommerce.user.dto.CreateUserRequest;
+import com.ecommerce.user.dto.UpdateUserRequest;
 import com.ecommerce.user.dto.UserResponse;
 import com.ecommerce.user.exception.EntityNotFoundException;
 import com.ecommerce.user.mapper.UserMapper;
 import com.ecommerce.user.model.User;
 import com.ecommerce.user.repository.UserRepository;
+import com.ecommerce.user.keycloak.KeycloakAdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final KeycloakAdminService keycloakAdminService;
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
@@ -38,25 +41,44 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse createUser(UserRequest userRequest) {
-        User user = userMapper.toEntity(userRequest);
-        User savedUser = userRepository.save(user);
-        return userMapper.toResponse(savedUser);
+    public UserResponse createUser(CreateUserRequest request) {
+        String token = keycloakAdminService.getAdminAccessToken();
+        String keycloakUserId = keycloakAdminService.createUser(token, request);
+
+        User user = userMapper.toEntity(request);
+        user.setKeycloakId(keycloakUserId);
+
+        User saved = userRepository.save(user);
+        return userMapper.toResponse(saved);
     }
 
     @Transactional
-    public UserResponse updateUser(String id, UserRequest updateUserRequest) {
+    public UserResponse updateUser(String id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
                                   .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-        userMapper.updateUserFromRequest(updateUserRequest, user);
-        User savedUser = userRepository.save(user);
-        return userMapper.toResponse(savedUser);
+
+        String token = keycloakAdminService.getAdminAccessToken();
+
+        keycloakAdminService.updateUser(token, user.getKeycloakId(), request);
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            keycloakAdminService.updatePassword(token, user.getKeycloakId(), request.getPassword());
+        }
+
+        userMapper.updateUserFromRequest(request, user);
+        User saved = userRepository.save(user);
+
+        return userMapper.toResponse(saved);
     }
 
     @Transactional
     public void deleteUser(String id) {
         User user = userRepository.findById(id)
                                   .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        String token = keycloakAdminService.getAdminAccessToken();
+
+        keycloakAdminService.deleteUser(token, user.getKeycloakId());
         userRepository.delete(user);
     }
 }
+
